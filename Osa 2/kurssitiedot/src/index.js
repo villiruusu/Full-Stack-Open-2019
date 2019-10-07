@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Course from './components/Course'
+import App from './App'
 
+const topic = "Web development curriculum"
 
-const App = () => {
-  const course = {
+const courses = [
+  {
     name: "Half Stack application development",
+    id: 1,
     parts: [
       {
         name: "Fundamentals of React",
@@ -23,14 +25,24 @@ const App = () => {
         id: 3
       }
     ]
+  },
+  {
+    name: "Node.js",
+    id: 2,
+    parts: [
+      {
+        name: "Routing",
+        exercises: 3,
+        id: 1
+      },
+      {
+        name: "Middlewares",
+        exercises: 7,
+        id: 2
+      }
+    ]
   }
+]
 
-    return (
-        <div>
-            <Course course={course} />
-        </div>
 
-    )
-}
-
-ReactDOM.render(<App />, document.getElementById('root'))
+ReactDOM.render(<App courses={courses} topic={topic} />, document.getElementById('root'))
