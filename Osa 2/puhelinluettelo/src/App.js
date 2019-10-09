@@ -1,4 +1,7 @@
 import React, { useState } from 'react'
+import PersonForm from './components/PersonForm.js'
+import Persons from './components/Persons.js'
+import Filter from './components/Filter.js'
 
 const App = () => {
   const [persons, setPersons] = useState([
@@ -9,6 +12,7 @@ const App = () => {
   ])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [newFilter, setNewFilter] = useState('')
 
   /* Käyttäjän syöttämä nimi on newName-muuttujassa, joka syötetään addNumber-metodin
      avulla persons-taulukkoon, jonka jälkeen newName-tietueen arvo nollataan */
@@ -41,39 +45,21 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  /*  Mapataan persons-taulukko läpi ja tulostetaan tietueet näkyville
-      Laitettu unque keyksi puhelinnumero, sillä samannimisiä voi olla monia */
-  const rows = () => persons.map(person =>
-    <div key={person.number}>{person.name} {person.number}</div>
-  )
-
+  const filterNames = (event) => {
+    event.preventDefault()
+    setNewFilter(event.target.value)
+  }
 
 
   return (
     <div>
       <h1>Phonebook</h1>
+      <h2>Filter numbers</h2>
+      <Filter newFilter={newFilter} filterNames={filterNames} />
       <h2>Add a new contact</h2>
-      <form onSubmit={addNumber}>
-        <div>
-          name:
-          <input
-            value={newName}
-            onChange={handleNameAdding}
-          />
-        </div>
-        <div>
-          number:
-          <input
-            value={newNumber}
-            onChange={handleNumberAdding}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm addNumber={addNumber} newName={newName} handleNameAdding={handleNameAdding} newNumber={newNumber} handleNumberAdding={handleNumberAdding} />
       <h2>Numbers</h2>
-      {rows()}
+      <Persons persons={persons} newFilter={newFilter}/>
     </div>
   )
 }
