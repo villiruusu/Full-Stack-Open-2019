@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import PersonForm from './components/PersonForm.js'
 import Persons from './components/Persons.js'
 import Filter from './components/Filter.js'
@@ -29,6 +30,18 @@ const App = () => {
             setNewNumber('')
           }
   }
+
+  // Haetaan json-data ja asetetaan se persons-taulukkoon
+  useEffect(() => {
+    // console.log("Hiphei")
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        //console.log(response.data)
+        setPersons(response.data)
+      })
+  }, [])
+
 
   // Tallennetaan käyttäjän syöttämä nimi newName-muuttujaan talteen
   const handleNameAdding = (event) => {
