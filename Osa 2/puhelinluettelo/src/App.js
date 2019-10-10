@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import PersonForm from './components/PersonForm.js'
+import Persons from './components/Persons.js'
+import Filter from './components/Filter.js'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567'},
-    { name: 'Ada Lovelace', number: '39-44-5323523' },
-    { name: 'Dan Abramov', number: '12-43-234345' },
-    { name: 'Mary Poppendieck', number: '39-23-6423122' }
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
+  const [newFilter, setNewFilter] = useState('')
 
   /* Käyttäjän syöttämä nimi on newName-muuttujassa, joka syötetään addNumber-metodin
      avulla persons-taulukkoon, jonka jälkeen newName-tietueen arvo nollataan */
@@ -31,6 +31,18 @@ const App = () => {
           }
   }
 
+  // Haetaan json-data ja asetetaan se persons-taulukkoon
+  useEffect(() => {
+    // console.log("Hiphei")
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        //console.log(response.data)
+        setPersons(response.data)
+      })
+  }, [])
+
+
   // Tallennetaan käyttäjän syöttämä nimi newName-muuttujaan talteen
   const handleNameAdding = (event) => {
     setNewName(event.target.value)
@@ -41,39 +53,21 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
-  /*  Mapataan persons-taulukko läpi ja tulostetaan tietueet näkyville
-      Laitettu unque keyksi puhelinnumero, sillä samannimisiä voi olla monia */
-  const rows = () => persons.map(person =>
-    <div key={person.number}>{person.name} {person.number}</div>
-  )
-
+  const filterNames = (event) => {
+    event.preventDefault()
+    setNewFilter(event.target.value)
+  }
 
 
   return (
     <div>
       <h1>Phonebook</h1>
+      <h2>Filter numbers</h2>
+      <Filter newFilter={newFilter} filterNames={filterNames} />
       <h2>Add a new contact</h2>
-      <form onSubmit={addNumber}>
-        <div>
-          name:
-          <input
-            value={newName}
-            onChange={handleNameAdding}
-          />
-        </div>
-        <div>
-          number:
-          <input
-            value={newNumber}
-            onChange={handleNumberAdding}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <PersonForm addNumber={addNumber} newName={newName} handleNameAdding={handleNameAdding} newNumber={newNumber} handleNumberAdding={handleNumberAdding} />
       <h2>Numbers</h2>
-      {rows()}
+      <Persons persons={persons} newFilter={newFilter}/>
     </div>
   )
 }
