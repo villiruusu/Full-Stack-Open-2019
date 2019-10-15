@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
 import PersonForm from './components/PersonForm.js'
 import Persons from './components/Persons.js'
 import Filter from './components/Filter.js'
+import phonebookService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -25,20 +25,23 @@ const App = () => {
         } else if (persons.some(person => person.number === newNumber)) {
           window.alert(`${newNumber} is already added to phonebook`)
         } else {
-            setPersons(persons.concat(newPerson))
-            setNewName('')
-            setNewNumber('')
+            phonebookService
+              .addPerson(newPerson)
+              .then(addedPerson => {
+                setPersons(persons.concat(addedPerson))
+                setNewName('')
+                setNewNumber('')
+              })
           }
   }
 
   // Haetaan json-data ja asetetaan se persons-taulukkoon
   useEffect(() => {
     // console.log("Hiphei")
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        //console.log(response.data)
-        setPersons(response.data)
+    phonebookService
+      .getAll()
+      .then(allNumbers => {
+        setPersons(allNumbers)
       })
   }, [])
 
@@ -58,16 +61,40 @@ const App = () => {
     setNewFilter(event.target.value)
   }
 
+  const deletePerson = (person) => {
+    //console.log("inside deletePerson")
+    if (window.confirm(`Delete ${person.name} ?`)) {
+      phonebookService
+      .deletePerson(person.id)
+        .then(response => {
+          setPersons(persons.filter(item => item.id !== person.id ))
+
+        })
+      }
+    }
 
   return (
     <div>
       <h1>Phonebook</h1>
       <h2>Filter numbers</h2>
-      <Filter newFilter={newFilter} filterNames={filterNames} />
+      <Filter
+        newFilter={newFilter}
+        filterNames={filterNames}
+      />
       <h2>Add a new contact</h2>
-      <PersonForm addNumber={addNumber} newName={newName} handleNameAdding={handleNameAdding} newNumber={newNumber} handleNumberAdding={handleNumberAdding} />
+      <PersonForm
+        addNumber={addNumber}
+        newName={newName}
+        handleNameAdding={handleNameAdding}
+        newNumber={newNumber}
+        handleNumberAdding={handleNumberAdding}
+      />
       <h2>Numbers</h2>
-      <Persons persons={persons} newFilter={newFilter}/>
+      <Persons
+        persons={persons}
+        newFilter={newFilter}
+        deletePerson={deletePerson}
+      />
     </div>
   )
 }

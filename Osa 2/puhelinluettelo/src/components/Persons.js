@@ -2,7 +2,7 @@ import React from 'react'
 
 /*  Mapataan persons-taulukko läpi ja tulostetaan tietueet näkyville
       Laitettu unque keyksi puhelinnumero, sillä samannimisiä voi olla monia */
-  const Persons = ({persons, newFilter}) => {
+  const Persons = ({persons, newFilter, deletePerson}) => {
       // muutetaan käyttäjän syöttämä hakusana sisältämään pelkkiä pieniä kirjaimia
       let newFilterLowerCase = newFilter.toLowerCase()
 
@@ -11,7 +11,7 @@ import React from 'react'
          newFilter-muuttujan sisältämän tekstinpätkän
 
          Yritin myös saada puhelinnumerohakua, mutta se jäi nyt toistaiseksi kesken.
-         Tämän varmaan voisi tehdä if-lauseilla ja regex-säännöillä?? */ 
+         Tämän varmaan voisi tehdä if-lauseilla ja regex-säännöillä?? */
       let newFilterArray = persons.filter((person) => {
         let personToLowerCase = person.name.toLowerCase()
         // let noHyphens = person.number.replace(/-/g,"") -- numeroista väliviivat pois
@@ -21,7 +21,9 @@ import React from 'react'
         )
       })
       return newFilterArray.map(person =>
-        <div key={person.number}>{person.name} {person.number}</div>
+        <div key={person.number}>{person.name} {person.number}
+        <button onClick={() => deletePerson(person)}>Delete</button>
+        </div>
   )
 }
 
