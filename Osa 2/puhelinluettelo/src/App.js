@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import PersonForm from './components/PersonForm.js'
 import Persons from './components/Persons.js'
 import Filter from './components/Filter.js'
+import Notification from './components/Notification.js'
 import phonebookService from './services/persons'
 
 const App = () => {
@@ -9,6 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [message, setMessage] = useState(null)
+  const [className, setClassName] = useState('')
 
   /* Käyttäjän syöttämä nimi on newName-muuttujassa, joka syötetään addNumber-metodin
      avulla persons-taulukkoon, jonka jälkeen newName-tietueen arvo nollataan */
@@ -25,13 +28,21 @@ const App = () => {
         } else if (persons.some(person => person.number === newNumber)) {
           window.alert(`${newNumber} is already added to phonebook`)
         } else {
+            const messageClass = "add" // tallennetaan muuttujaan haluttu className, tässä tapauksessa "add"
             phonebookService
               .addPerson(newPerson)
               .then(addedPerson => {
                 setPersons(persons.concat(addedPerson))
+                setMessage(`${addedPerson.name} was added to phonebook`) // Asetetaan messageksi kyseinen viesti
+                setClassName(messageClass) // asetetaan classNameksi aiemmin muuttujaan tallennettu "add"
+                setTimeout(() => { // Viesti näkyy ikkunassa 5 sekuntia ja sen jälkeen tyhjenee, samoin classname-kenttä tyhjenee
+                  setMessage(null)
+                  setClassName('')
+                }, 5000)
                 setNewName('')
                 setNewNumber('')
               })
+
           }
   }
 
@@ -56,6 +67,7 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  // Tallennetaan käyttäjän syöttämä filtteri muuttujaan talteen käsittelyä varten
   const filterNames = (event) => {
     event.preventDefault()
     setNewFilter(event.target.value)
@@ -64,11 +76,17 @@ const App = () => {
   const deletePerson = (person) => {
     //console.log("inside deletePerson")
     if (window.confirm(`Delete ${person.name} ?`)) {
+      const messageClass = "delete" // tallennetaan muuttujaan haluttu className, tässä tapauksessa "delete"
       phonebookService
       .deletePerson(person.id)
         .then(response => {
           setPersons(persons.filter(item => item.id !== person.id ))
-
+          setMessage(`${person.name} was deleted from phonebook`) // Muodostetaan näytettävä viesti, henkilö poistettu tietokannasta
+          setClassName(messageClass) // Määritetään classNameksi aiemmin muuttujaan tallennettu "delete"
+          setTimeout(() => { // Viesti näkyy ikkunassa 5 sekuntia ja sen jälkeen tyhjenee, samoin classname-kenttä tyhjenee
+            setMessage(null)
+            setClassName('')
+          }, 5000)
         })
       }
     }
@@ -76,6 +94,12 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+
+      <Notification
+        message={message}
+        className={className}
+      />
+
       <h2>Filter numbers</h2>
       <Filter
         newFilter={newFilter}
