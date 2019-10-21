@@ -2,7 +2,7 @@ import React from 'react'
 
 /*  Mapataan persons-taulukko läpi ja tulostetaan tietueet näkyville
       Laitettu unque keyksi puhelinnumero, sillä samannimisiä voi olla monia */
-  const Persons = ({persons, newFilter, deletePerson}) => {
+  const Persons = ({ persons, newFilter, deletePerson }) => {
       // muutetaan käyttäjän syöttämä hakusana sisältämään pelkkiä pieniä kirjaimia
       let newFilterLowerCase = newFilter.toLowerCase()
 
